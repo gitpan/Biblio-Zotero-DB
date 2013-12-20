@@ -1,0 +1,99 @@
+
+use strict;
+use warnings;
+
+use 5.010000;
+
+use ExtUtils::MakeMaker 6.30;
+
+
+
+my %WriteMakefileArgs = (
+  "ABSTRACT" => "helper module to access the Zotero SQLite database",
+  "AUTHOR" => "Zakariyya Mughal <zmughal\@cpan.org>",
+  "BUILD_REQUIRES" => {},
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
+  },
+  "DISTNAME" => "Biblio-Zotero-DB",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "Biblio::Zotero::DB",
+  "PREREQ_PM" => {
+    "DBD::SQLite" => "1.39",
+    "DBIx::Class::Core" => 0,
+    "DBIx::Class::ResultSet" => 0,
+    "DBIx::Class::Schema" => 0,
+    "File::Copy" => 0,
+    "File::HomeDir" => 0,
+    "File::Temp" => 0,
+    "List::AllUtils" => 0,
+    "Moo" => 0,
+    "Moo::Role" => 0,
+    "Path::Class" => 0,
+    "Path::Class::URI" => 0,
+    "Path::Iterator::Rule" => 0,
+    "URI" => 0,
+    "URI::Escape" => 0,
+    "base" => 0,
+    "strict" => 0,
+    "utf8" => 0,
+    "warnings" => 0
+  },
+  "TEST_REQUIRES" => {
+    "Exporter" => 0,
+    "Test::More" => 0,
+    "Test::Most" => 0,
+    "Unicode::Normalize" => 0,
+    "lib" => 0,
+    "utf8::all" => 0
+  },
+  "VERSION" => "0.001",
+  "test" => {
+    "TESTS" => "t/*.t"
+  }
+);
+
+
+my %FallbackPrereqs = (
+  "DBD::SQLite" => "1.39",
+  "DBIx::Class::Core" => 0,
+  "DBIx::Class::ResultSet" => 0,
+  "DBIx::Class::Schema" => 0,
+  "Exporter" => 0,
+  "File::Copy" => 0,
+  "File::HomeDir" => 0,
+  "File::Temp" => 0,
+  "List::AllUtils" => 0,
+  "Moo" => 0,
+  "Moo::Role" => 0,
+  "Path::Class" => 0,
+  "Path::Class::URI" => 0,
+  "Path::Iterator::Rule" => 0,
+  "Test::More" => 0,
+  "Test::Most" => 0,
+  "URI" => 0,
+  "URI::Escape" => 0,
+  "Unicode::Normalize" => 0,
+  "base" => 0,
+  "lib" => 0,
+  "strict" => 0,
+  "utf8" => 0,
+  "utf8::all" => 0,
+  "warnings" => 0
+);
+
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  delete $WriteMakefileArgs{TEST_REQUIRES};
+  delete $WriteMakefileArgs{BUILD_REQUIRES};
+  $WriteMakefileArgs{PREREQ_PM} = \%FallbackPrereqs;
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+
+WriteMakefile(%WriteMakefileArgs);
+
+
+
