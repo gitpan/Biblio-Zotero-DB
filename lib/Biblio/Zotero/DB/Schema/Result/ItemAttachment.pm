@@ -1,9 +1,6 @@
 use utf8;
 package Biblio::Zotero::DB::Schema::Result::ItemAttachment;
-{
-  $Biblio::Zotero::DB::Schema::Result::ItemAttachment::VERSION = '0.002';
-}
-
+$Biblio::Zotero::DB::Schema::Result::ItemAttachment::VERSION = '0.003';
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
@@ -93,11 +90,13 @@ __PACKAGE__->belongs_to(
 
 use URI;
 use URI::Escape;
+use Path::Class;
+use Path::Class::URI;
 
 # TODO: document
 sub uri {
 	my ($self) = @_;
-  # TODO handle case where the item in not an attachment
+	# TODO handle case where the item in not an attachment
 	if(not defined $self->path) {
 		# get URI from ItemDataValue table
 		URI->new( $self->itemid->item_datas_rs->find(
@@ -109,16 +108,21 @@ sub uri {
 		# link to file in storage
 		my $key = $self->itemid->key;
 		my $subdir = $self->result_source->schema->zotero_storage_directory()->subdir($key);
+
+		my $subdir_uri = $subdir->uri->as_string;
+		# TODO the regex below is a fix for Path::Class::URI. Remove later when new version is released.
+		$subdir_uri .= "/" if $subdir_uri !~ m,/$,,; # force to be directory
+		# NOTE: see bug report for Path::Class::URI:
+		# <https://github.com/zmughal/Path-Class-URI/issues/1>,
+		# <https://rt.cpan.org/Ticket/Display.html?id=86818>
+
 		URI->new_abs( uri_escape( $self->path =~ s/^storage://r ),
 				# escaping URI because it may not be actually escaped properly in the DB
-			$subdir->uri . "/" # force to be directory
-			# NOTE: see bug report for Path::Class::URI:
-			# <https://github.com/zmughal/Path-Class-URI/issues/1>,
-			# <https://rt.cpan.org/Ticket/Display.html?id=86818>
+			$subdir_uri
 		);
 	} else {
 		# link to file
-		URI->new($self->path, 'file'); # NOTE this needs to be check for Zotero on non-Unix systems
+		file($self->path)->uri; # NOTE this needs to be check for Zotero on non-Unix systems
 	}
 }
 
@@ -136,7 +140,7 @@ Biblio::Zotero::DB::Schema::Result::ItemAttachment
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 NAME
 

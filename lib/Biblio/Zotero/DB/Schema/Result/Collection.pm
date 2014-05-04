@@ -1,9 +1,6 @@
 use utf8;
 package Biblio::Zotero::DB::Schema::Result::Collection;
-{
-  $Biblio::Zotero::DB::Schema::Result::Collection::VERSION = '0.002';
-}
-
+$Biblio::Zotero::DB::Schema::Result::Collection::VERSION = '0.003';
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
@@ -95,6 +92,7 @@ __PACKAGE__->belongs_to(
 # NOTE: extended DBIC schema below
 
 
+
 sub name {
 	my $self = shift;
 	return $self->collectionname;
@@ -107,6 +105,10 @@ sub items {
 		->get_column('itemid')->as_query;
 	$schema->resultset('StoredItem')->search( { itemid => { -in => $items } });
 }
+
+
+__PACKAGE__->load_components("Tree::AdjacencyList");
+__PACKAGE__->parent_column('parentcollectionid');
 
 1;
 
@@ -122,7 +124,7 @@ Biblio::Zotero::DB::Schema::Result::Collection
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 ATTRIBUTES
 
@@ -229,6 +231,13 @@ Related object: L<Biblio::Zotero::DB::Schema::Result::Collection>
 Type: belongs_to
 
 Related object: L<Biblio::Zotero::DB::Schema::Result::Collection>
+
+=head1 SUMMARY
+
+This represents the collection and subcollections (folder) structure of Zotero.
+
+This class uses a L<Tree::AdjacencyList|DBIx::Class::Tree::AdjacencyList>
+component to represent the parent-child relationship between collections.
 
 =head1 AUTHOR
 
